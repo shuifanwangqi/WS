@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wss.demo.dao.UserDao">
+    <resultMap id="UserMap" type="com.wss.demo.vo.UserVo">
+        <result column="id" property="id"/>
+        <result column="name" property="UserName"/>
+
+        <result column="rName" property="roleName"/>
+    </resultMap>
+    <resultMap id="RoleMap" type="com.wss.demo.vo.RoleVo">
+        <result column="id" property="roleId"/>
+        <result column="name" property="roleName"/>
+    </resultMap>
+<select id="getUser" resultMap="UserMap" parameterType="com.wss.demo.dto.UserDto">
+    select user.id as id,user.name as name ,role.name as rName from user
+    left join role_user on role_user.user_id =user.id
+    left join role on role.id=role_user.role_id
+    where 1=1
+    <if test="userName!=null and userName!=''" >
+        and   name like %#{UserName}%
+    </if>
+    limit #{pageIndex},${pageSize}
+</select>
+    <select id="getTotal" resultType="java.lang.Integer" parameterType="com.wss.demo.dto.UserDto">
+        select count(user.id) from user
+        left join role_user on role_user.user_id =user.id
+        left join role on role.id=role_user.role_id
+        where 1=1
+        <if test="userName!=null and userName!=''" >
+            and   name like %#{UserName}%
+        </if>
+
+    </select>
+<select id="getRole" resultMap="RoleMap">
+    select id,name from role;
+</select>
+<select id="UserExit" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select id from user
+    where name=#{name};
+</select>
+<delete id="deleteUser" parameterType="java.lang.Integer">
+    delete from  user where id=#{userId}
+</delete>
+<delete id="deleteUserRole" parameterType="java.lang.Integer">
+      delete from role_user where user_id=#{userId}
+</delete>
+ <insert id="addUser" parameterType="com.wss.demo.dto.UserDto" useGeneratedKeys="true" keyProperty="userId" keyColumn="id">
+      insert into user (name,password,salt) values(#{userName},#{password},#{salt})
+ </insert>
+<insert id="addUserRole" parameterType="com.wss.demo.dto.UserDto">
+    insert into role_user (role_id,user_id) values(#{roleId},#{userId})
+</insert>
+</mapper>

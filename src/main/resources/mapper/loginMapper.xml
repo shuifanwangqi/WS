@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wss.demo.dao.LoginDao">
+    <resultMap id="UserMap" type="com.wss.demo.dto.User">
+        <result column="id" property="id"/>
+        <result column="name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+
+    </resultMap>
+<select id="getUser" parameterType="java.lang.String" resultMap="UserMap">
+    select name ,password,salt  from user
+    where name=#{name}
+</select>
+ <select id="getPermissions"   parameterType="java.lang.String" resultType="java.lang.String">
+     select url from user
+     left join role_user on role_user.user_id=user.id
+     left join role_resource on role_resource.role_id =role_user.role_id
+     left join resource on resource.id=role_resource.resource_id
+     where user.name=#{name}
+
+ </select>
+</mapper>

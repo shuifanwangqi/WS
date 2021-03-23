@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wss.demo.dao.AlarmDao">
+    <resultMap id="AlarmMap" type="com.wss.demo.vo.AlarmVo">
+         <result column="id" property="id"/>
+         <result column="location" property="location"/>
+         <result column="label_1" property="isPain"/>
+         <result column="label_2" property="isFall"/>
+         <result column="room_number" property="roomNumber"/>
+        <result column="time" property="time"/>
+    </resultMap>
+    <resultMap id="RoomMap" type="com.wss.demo.vo.RoomVo">
+        <result column="room_number" property="roomNumber"/>
+    </resultMap>
+<select id="getAlarm"  resultMap="AlarmMap" parameterType="com.wss.demo.dto.AlarmDto">
+    select id,location,label_1,label_2,room_number,time
+    from  picture
+    where  1=1
+    <if test="startDate!=null and startDate!=''" >
+       and   time>#{startDate}
+    </if>
+    <if test="endDate!=null and endDate!=''" >
+        and   time &lt; #{endDate}
+    </if>
+     <if test="roomNumber!=null and roomNumber!=''">
+       and room_number =#{roomNumber}
+     </if>
+     order by id desc
+     limit ${pageIndex},${pageSize}
+</select>
+    <select id="getTotal" resultType="java.lang.Integer" parameterType="com.wss.demo.dto.AlarmTempDto">
+        select count(id)
+        from  picture
+        where 1=1
+        <if test="startDate!=null and startDate!=''">
+            and time > #{startDate}
+        </if>
+        <if test="endDate!=null and endDate!=''" >
+            and   time &lt; #{endDate}
+        </if>
+        <if test="roomNumber!=null and roomNumber!=''">
+            and room_number =#{roomNumber}
+        </if>
+    </select>
+<select id="getRoom" resultMap="RoomMap">
+    select distinct room_Number from picture;
+</select>
+
+    <delete id="deleteAlarm" parameterType="java.lang.Integer">
+        delete from picture where  id=#{id}
+    </delete>
+</mapper>
